@@ -1,0 +1,7 @@
+Readme:
+
+setup:
+
+pip install SpeechRecognition
+pip install pyaudio
+pip install tensorflow
