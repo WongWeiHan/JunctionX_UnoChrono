@@ -56,26 +56,39 @@ print('start...')
 
 r = sr.Recognizer()
 run = True
-while(run):
-    with sr.Microphone() as source:
-        print('speak')
-        r.adjust_for_ambient_noise(source)
-        audio = r.listen(source)    
-    
-    try:
-        user_text = r.recognize_google(audio)
-        print('processing...')
-        predict_data = pd.DataFrame([[user_text]], columns = ['text'])
-        test_text = predict_data['text']
-        x_test = tokenize.texts_to_matrix(test_text)
-        prediction = model.predict(np.array([x_test[0]]))
-        predicted_label = text_labels[np.argmax(prediction)]
-        print(test_text.iloc[0][:50])
-        print("Predicted: " + predicted_label + "\n") 
+run0 = True
+while(run0):
+    while(run):
+        with sr.Microphone() as source:
+            print('speak')
+            r.adjust_for_ambient_noise(source)
+            audio = r.listen(source)    
         
-        if 'exit' in user_text:
-            run = False
-    except: 
-        print('no aud')
-
-    
+        try:
+            user_text = r.recognize_google(audio)
+            print('processing...')
+            predict_data = pd.DataFrame([[user_text]], columns = ['text'])
+            test_text = predict_data['text']
+            x_test = tokenize.texts_to_matrix(test_text)
+            prediction = model.predict(np.array([x_test[0]]))
+            predicted_label = text_labels[np.argmax(prediction)]
+            print(test_text.iloc[0][:50])
+            print("Predicted: " + predicted_label + "\n") 
+            
+            if 'scam' in predicted_label:
+                print()
+                print('SCAM DETECTED! Terminating')
+                cont = input('continue?(y/n)')
+                run = False
+                
+            if 'exit' in user_text:
+                run = False
+                run0 = False
+        except: 
+            print('no aud')
+        
+    if 'y' in cont or 'Y' in cont:
+        run0 = True
+        run = True
+    else:
+        run0 = False
